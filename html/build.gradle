@@ -1,5 +1,6 @@
 apply plugin: "java"
-apply plugin: "jetty"
+apply plugin: "gwt"
+apply plugin: "war"
 
 gwt {
     gwtVersion='2.8.0' // Should match the gwt version used for building the gwt backend
@@ -12,20 +13,42 @@ gwt {
     project.webAppDirName = 'webapp'
 
     compiler {
-        strict = true;
-        disableCastChecking = true;
+        strict = true
+        disableCastChecking = true
     }
 }
 
-task draftRun(type: JettyRunWar) {
-    dependsOn draftWar
-    dependsOn.remove('war')
-    webApp=draftWar.archivePath
-    daemon=true
+import org.wisepersist.gradle.plugins.gwt.GwtSuperDev
+
+dependencies {
+    implementation project(':core')
+    implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+    implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
 }
 
-task superDev(type: de.richsource.gradle.plugins.gwt.GwtSuperDev) {
-    dependsOn draftRun
+HttpFileServer server = null
+def httpFilePort = 8080
+
+task startHttpServer() {
+    dependsOn draftCompileGwt
+    String output = project.buildDir.path + "/gwt/draftOut"
+    doLast {
+        copy {
+            from "webapp"
+            into output
+        }
+        copy {
+            from "war"
+            into output
+        }
+        server = new SimpleHttpFileServerFactory().start(new File(output), httpFilePort)
+        println "Server started in directory " + server.getContentRoot() + ", port " + server.getPort()
+    }
+}
+
+task superDev(type: GwtSuperDev) {
+    dependsOn startHttpServer
     doFirst {
     	gwt.modules = gwt.devModules
     }
@@ -62,9 +85,7 @@ task addSource {
 tasks.compileGwt.dependsOn(addSource)
 tasks.draftCompileGwt.dependsOn(addSource)
 
-sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
-
 
 eclipse.project {
     name = appName + "-html"
