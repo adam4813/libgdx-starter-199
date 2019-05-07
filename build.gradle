@@ -6,13 +6,12 @@ buildscript {
     }
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-        classpath 'com.android.tools.build:gradle:3.3.1'
+        classpath 'com.android.tools.build:gradle:3.4.0'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.3'
     }
 }
 
 allprojects {
-    apply plugin: "eclipse"
     apply plugin: "idea"
 
     version = '1.0'
@@ -31,8 +30,4 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }

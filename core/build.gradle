@@ -7,7 +7,3 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 dependencies {
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 }
-
-eclipse.project {
-    name = appName + "-core"
-}

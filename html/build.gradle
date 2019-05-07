@@ -86,7 +86,3 @@ tasks.compileGwt.dependsOn(addSource)
 tasks.draftCompileGwt.dependsOn(addSource)
 
 sourceSets.main.java.srcDirs = [ "src/" ]
-
-eclipse.project {
-    name = appName + "-html"
-}
